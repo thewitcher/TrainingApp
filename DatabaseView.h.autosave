@@ -1,0 +1,15 @@
+#ifndef DATABASEVIEW_H
+#define DATABASEVIEW_H
+
+#include <QSqlRelationalTableModel>
+
+class DatabaseView : public QSqlRelationalTableModel
+{
+public:
+	DatabaseView( QObject* a_pParent = nullptr );
+
+protected:
+	QVariant data( const QModelIndex &index, int role ) const;
+};
+
+#endif // DATABASEVIEW_H
