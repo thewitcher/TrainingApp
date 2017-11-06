@@ -3,6 +3,8 @@
 #include "ChartQuery.h"
 #include "Constants.h"
 
+#include "Settings.h"
+
 #include <QtCharts/QBarSet>
 #include <QDebug>
 #include <QDate>
@@ -16,6 +18,8 @@ void ChartViewController::ConfigureXAxis()
 {
 	m_pAxisX->setFormat( Constants::DATA_FORMAT );
 	m_pChart->addAxis( m_pAxisX, Qt::AlignBottom );
+	m_pAxisX->setMin( QDateTime::fromString( Settings::GetInstance()->GetSetting( "StartDate" ), Constants::DATA_FORMAT ) );
+	m_pAxisX->setMax( QDateTime::fromString( Settings::GetInstance()->GetSetting( "EndDate" ), Constants::DATA_FORMAT ) );
 }
 
 void ChartViewController::Draw( const QVector<ChartViewController::ESeriesType>& a_rSeriesToDraw )
@@ -30,6 +34,7 @@ void ChartViewController::Draw( const QVector<ChartViewController::ESeriesType>&
 		CreateAndAddSeries( eSeriesType );
 		bChangeAxisSizes = !bChangeAxisSizes;
 	}
+
 }
 
 Qt::AlignmentFlag ChartViewController::GetYAxisAlignment( ESeriesType a_eSeriesType ) const
@@ -37,70 +42,21 @@ Qt::AlignmentFlag ChartViewController::GetYAxisAlignment( ESeriesType a_eSeriesT
 	return ( a_eSeriesType % 2 == 0 ? Qt::AlignLeft : Qt::AlignRight );
 }
 
-void ChartViewController::CreateSeriesForAvgPulse()
+void ChartViewController::CreateSeries( ESeriesType a_eSeriesType , const QVector<QPointF>& a_aData , const QString& a_strName )
 {
 	QtCharts::QLineSeries* pSeries = new QtCharts::QLineSeries;
 
-	QVector<QPointF> aData = ChartQuery::GetDataForAvgPulse();
-	for ( auto pPoint : aData )
+	for ( auto pPoint : a_aData )
 	{
 		*pSeries << pPoint;
 	}
 
-	pSeries->setName( "Średnie tętno" );
+	pSeries->setName( a_strName );
 	m_pChart->addSeries( pSeries );
 
-	QtCharts::QValueAxis* pAxisY = GetYAxis( SeriesForAvgPulse );
+	QtCharts::QValueAxis* pAxisY = GetYAxis( a_eSeriesType );
 	pAxisY->setLinePenColor( pSeries->pen().color() );
-	m_pChart->addAxis( pAxisY, GetYAxisAlignment( SeriesForAvgPulse ) );
-
-	pSeries->attachAxis( m_pAxisX );
-	pSeries->attachAxis( pAxisY );
-
-	connect( pSeries, &QtCharts::QLineSeries::hovered, this, &ChartViewController::slotToolTip, Qt::UniqueConnection );
-	connect( pSeries, &QtCharts::QLineSeries::clicked, this, &ChartViewController::slotKeepChartTip, Qt::UniqueConnection );
-}
-
-void ChartViewController::CreateSeriesForAvgPace()
-{
-	QtCharts::QLineSeries* pSeries = new QtCharts::QLineSeries;
-
-	QVector<QPointF> aData = ChartQuery::GetDataForAvgPace();
-	for ( auto pPoint : aData )
-	{
-		*pSeries << pPoint;
-	}
-
-	pSeries->setName( "Średnie tempo" );
-	m_pChart->addSeries( pSeries );
-
-	QtCharts::QValueAxis* pAxisY = GetYAxis( SeriesForAvgPace );
-	pAxisY->setLinePenColor( pSeries->pen().color() );
-	m_pChart->addAxis( pAxisY, GetYAxisAlignment( SeriesForAvgPace ) );
-
-	pSeries->attachAxis( m_pAxisX );
-	pSeries->attachAxis( pAxisY );
-
-	connect( pSeries, &QtCharts::QLineSeries::hovered, this, &ChartViewController::slotToolTip, Qt::UniqueConnection );
-	connect( pSeries, &QtCharts::QLineSeries::clicked, this, &ChartViewController::slotKeepChartTip, Qt::UniqueConnection );
-}
-
-void ChartViewController::CreateSeriesForHrRest()
-{
-	QtCharts::QLineSeries* pSeries = new QtCharts::QLineSeries;
-
-	QVector<QPointF> aData = ChartQuery::GetDataForHrRest();
-	for ( auto pPoint : aData )
-	{
-		*pSeries << pPoint;
-	}
-
-	pSeries->setName( "Tętno spoczynkowe" );
-	m_pChart->addSeries( pSeries );
-
-	QtCharts::QValueAxis* pAxisY = GetYAxis( SeriesForHrRest );
-	pAxisY->setLinePenColor( pSeries->pen().color() );
-	m_pChart->addAxis( pAxisY, GetYAxisAlignment( SeriesForHrRest ) );
+	m_pChart->addAxis( pAxisY, GetYAxisAlignment( a_eSeriesType ) );
 
 	pSeries->attachAxis( m_pAxisX );
 	pSeries->attachAxis( pAxisY );
@@ -125,17 +81,42 @@ void ChartViewController::CreateAndAddSeries( ESeriesType a_eSeriesType )
 	{
 		case ChartViewController::SeriesForAvgPace:
 		{
-			CreateSeriesForAvgPace();
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForAvgPace(), "Średnie tempo" );
 			break;
 		}
 		case ChartViewController::SeriesForAvgPulse:
 		{
-			CreateSeriesForAvgPulse();
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForAvgPulse(), "Średnie tętno" );
 			break;
 		}
 		case ChartViewController::SeriesForHrRest:
 		{
-			CreateSeriesForHrRest();
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForHrRest(), "Tętno spoczynkowe" );
+			break;
+		}
+		case ChartViewController::SeriesForRest:
+		{
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForRest(), "Czas odpoczynku" );
+			break;
+		}
+		case ChartViewController::SeriesForDuration:
+		{
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForDuration(), "Czas trwania" );
+			break;
+		}
+		case ChartViewController::SeriesForCalories:
+		{
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForCalories(), "Kalorie" );
+			break;
+		}
+		case ChartViewController::SeriesForPaceTSS:
+		{
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForPaceTSS(), "Training stress score - tempo" );
+			break;
+		}
+		case ChartViewController::SeriesForPulseTSS:
+		{
+			CreateSeries( a_eSeriesType, ChartQuery::GetDataForPulseTSS(), "Training stress score - tętno" );
 			break;
 		}
 	}
@@ -207,15 +188,20 @@ void ChartViewController::ConfigureView()
 	m_pChart->setTitle( "Analiza treningów" );
 }
 
-void ChartViewController::slotOnHrRestToggled( bool a_bChecked )
+void ChartViewController::slotOnClearChartTipsClicked()
+{
+	ClearChartTips();
+}
+
+void ChartViewController::ChartCheckBoxToggle( bool a_bChecked, ESeriesType a_eSeriesType )
 {
 	if ( a_bChecked )
 	{
-		m_aSeriesToDraw.append( SeriesForHrRest );
+		m_aSeriesToDraw.append( a_eSeriesType );
 	}
 	else
 	{
-		m_aSeriesToDraw.removeOne( SeriesForHrRest );
+		m_aSeriesToDraw.removeOne( a_eSeriesType );
 	}
 
 	Draw( m_aSeriesToDraw );
@@ -223,33 +209,40 @@ void ChartViewController::slotOnHrRestToggled( bool a_bChecked )
 
 void ChartViewController::slotOnPaceToggled( bool a_bChecked )
 {
-	if ( a_bChecked )
-	{
-		m_aSeriesToDraw.append( SeriesForAvgPace );
-	}
-	else
-	{
-		m_aSeriesToDraw.removeOne( SeriesForAvgPace );
-	}
+	ChartCheckBoxToggle( a_bChecked, SeriesForAvgPace );
+}
 
-	Draw( m_aSeriesToDraw );
+void ChartViewController::slotOnHrRestToggled( bool a_bChecked )
+{
+	ChartCheckBoxToggle( a_bChecked, SeriesForHrRest );
 }
 
 void ChartViewController::slotOnPulseToggled( bool a_bChecked )
 {
-	if ( a_bChecked )
-	{
-		m_aSeriesToDraw.append( SeriesForAvgPulse );
-	}
-	else
-	{
-		m_aSeriesToDraw.removeOne( SeriesForAvgPulse );
-	}
-
-	Draw( m_aSeriesToDraw );
+	ChartCheckBoxToggle( a_bChecked, SeriesForAvgPulse );
 }
 
-void ChartViewController::slotOnClearChartTipsClicked()
+void ChartViewController::slotOnDurationToggled( bool a_bChecked )
 {
-	ClearChartTips();
+	ChartCheckBoxToggle( a_bChecked, SeriesForDuration );
+}
+
+void ChartViewController::slotOnRestToggled( bool a_bChecked )
+{
+	ChartCheckBoxToggle( a_bChecked, SeriesForRest );
+}
+
+void ChartViewController::slotOnCaloriesToggled( bool a_bChecked )
+{
+	ChartCheckBoxToggle( a_bChecked, SeriesForCalories );
+}
+
+void ChartViewController::slotOnPaceTSSToggled( bool a_bChecked )
+{
+	ChartCheckBoxToggle( a_bChecked, SeriesForPaceTSS );
+}
+
+void ChartViewController::slotOnPulseTSSToggled( bool a_bChecked )
+{
+	ChartCheckBoxToggle( a_bChecked, SeriesForPulseTSS );
 }

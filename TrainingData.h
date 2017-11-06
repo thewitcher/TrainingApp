@@ -20,8 +20,6 @@ public:
 	void SetName( const QString& a_rName );
 	void SetTime( const int a_iTime );
 	void SetMood( const int a_iMood );
-	void SetAvgPace( const int a_iAvgPace );
-	void SetAvgPulse( const int a_iAvgPulse );
 
 	ADD_MEMBER_WITH_GETER_AND_SETTER( Plan, str, QString, "" )
 	ADD_MEMBER_WITH_GETER_AND_SETTER( Realistaion, str, QString, "" )
@@ -36,8 +34,6 @@ private:
 	QString m_strName;
 	int m_iTime;
 	int m_iMood = 0;
-	int m_iAvgPace = 0;
-	int m_iAvgPulse = 0;
 };
 
 #endif // TRAININGDATA_H

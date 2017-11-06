@@ -47,7 +47,8 @@ SOURCES += \
     ChartViewController.cpp \
     ChartQuery.cpp \
     ChartTip.cpp \
-    Settings.cpp
+    Settings.cpp \
+    CommonQuery.cpp
 
 HEADERS += \
         MainWindow.h \
@@ -74,7 +75,8 @@ HEADERS += \
     ChartViewController.h \
     ChartQuery.h \
     ChartTip.h \
-    Settings.h
+    Settings.h \
+    CommonQuery.h
 
 FORMS += \
         MainWindow.ui \

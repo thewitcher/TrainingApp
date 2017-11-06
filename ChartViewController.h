@@ -20,6 +20,11 @@ public:
 	{ SeriesForAvgPace
 	, SeriesForAvgPulse
 	, SeriesForHrRest
+	, SeriesForRest
+	, SeriesForDuration
+	, SeriesForPaceTSS
+	, SeriesForPulseTSS
+	, SeriesForCalories
 	};
 
 	ChartViewController();
@@ -35,6 +40,12 @@ public slots:
 	void slotOnHrRestToggled( bool a_bChecked );
 	void slotOnPaceToggled( bool a_bChecked );
 	void slotOnPulseToggled( bool a_bChecked );
+	void slotOnDurationToggled( bool a_bChecked );
+	void slotOnRestToggled( bool a_bChecked );
+	void slotOnCaloriesToggled( bool a_bChecked );
+	void slotOnPaceTSSToggled( bool a_bChecked );
+	void slotOnPulseTSSToggled( bool a_bChecked );
+
 	void slotOnClearChartTipsClicked();
 
 protected slots:
@@ -42,11 +53,11 @@ protected slots:
 	void slotKeepChartTip();
 
 private:
-	void CreateSeriesForAvgPulse();
-	void CreateSeriesForAvgPace();
-	void CreateSeriesForHrRest();
+	void CreateSeries( ESeriesType a_eSeriesType, const QVector<QPointF>& a_aData, const QString& a_strName );
 
 	QtCharts::QValueAxis* GetYAxis( ESeriesType a_eSeriesType );
+
+	void ChartCheckBoxToggle( bool a_bChecked, ESeriesType a_eSeriesType );
 
 	void ClearChart();
 	void ClearChartTips();

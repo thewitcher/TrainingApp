@@ -20,8 +20,6 @@ QSharedPointer<TrainingData> TrainingQuery::Load( const QString& a_rDate ) const
 
 	if ( query.next() )
 	{
-		pTrainingData->SetAvgPace( query.value( "AvgPace" ).toInt() );
-		pTrainingData->SetAvgPulse( query.value( "AvgPulse" ).toInt() );
 		pTrainingData->SetMood( query.value( "Mood" ).toInt() );
 		pTrainingData->SetName( query.value( "Name" ).toString() );
 		pTrainingData->SetTime( query.value( "Time" ).toInt() );
@@ -57,16 +55,14 @@ bool TrainingQuery::CheckIfExist( const QSharedPointer<TrainingData> a_pDataObje
 void TrainingQuery::Insert( const QSharedPointer<TrainingData> a_pDataObject )
 {
 	QSqlQuery query;
-	query.prepare(	"INSERT INTO Training (Date, Name, Mood, Time, AvgPace, AvgPulse, Realisation, Plan, Rest, "
+	query.prepare(	"INSERT INTO Training (Date, Name, Mood, Time, Realisation, Plan, Rest, "
 					"TrainingEffect, EnduranceLevel, TrainingType) "
-					"VALUES (:Date, :Name, :Mood, :Time, :AvgPace, :AvgPulse, :Realisation, :Plan, :Rest, "
+					"VALUES (:Date, :Name, :Mood, :Time, :Realisation, :Plan, :Rest, "
 					":TrainingEffect, :EnduranceLevel, :TrainingType)" );
 	query.bindValue( ":Date", a_pDataObject->GetDate() );
 	query.bindValue( ":Name", a_pDataObject->GetName() );
 	query.bindValue( ":Mood", a_pDataObject->GetMood() );
 	query.bindValue( ":Time", a_pDataObject->GetTime() );
-	query.bindValue( ":AvgPace", a_pDataObject->GetAvgPace() );
-	query.bindValue( ":AvgPulse", a_pDataObject->GetAvgPulse() );
 	query.bindValue( ":Realisation", a_pDataObject->GetRealistaion() );
 	query.bindValue( ":Plan", a_pDataObject->GetPlan() );
 	query.bindValue( ":Rest", a_pDataObject->GetRest() );
@@ -85,15 +81,12 @@ void TrainingQuery::Update( const QSharedPointer<TrainingData> a_pDataObject )
 	QSqlQuery query;
 	query.prepare(	"UPDATE Training "
 					"SET Name = :Name, Mood = :Mood, TrainingEffect = :TrainingEffect, EnduranceLevel = :EnduranceLevel, "
-					"TrainingType = :TrainingType, Time = :Time, AvgPace = :AvgPace, AvgPulse = :AvgPulse, "
-					"Realisation = :Realisation, Plan = :Plan, Rest = :Rest "
+					"TrainingType = :TrainingType, Time = :Time, Realisation = :Realisation, Plan = :Plan, Rest = :Rest "
 					"WHERE Date = :Date" );
 	query.bindValue( ":Date", a_pDataObject->GetDate() );
 	query.bindValue( ":Name", a_pDataObject->GetName() );
 	query.bindValue( ":Mood", a_pDataObject->GetMood() );
 	query.bindValue( ":Time", a_pDataObject->GetTime() );
-	query.bindValue( ":AvgPace", a_pDataObject->GetAvgPace() );
-	query.bindValue( ":AvgPulse", a_pDataObject->GetAvgPulse() );
 	query.bindValue( ":Realisation", a_pDataObject->GetRealistaion() );
 	query.bindValue( ":Plan", a_pDataObject->GetPlan() );
 	query.bindValue( ":Rest", a_pDataObject->GetRest() );

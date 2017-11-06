@@ -14,7 +14,8 @@ public:
 
 protected:
 	void LoadDistanceAndDuration( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const;
-	void LoadAvgPulseAndPace( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const;
+	void LoadAvgPulse( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const;
+	void LoadAvgPace( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const;
 	void LoadTrainingName( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const;
 	void LoadTrainingType( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const;
 	int GetIntervalCount( const int a_iTrainingId ) const;

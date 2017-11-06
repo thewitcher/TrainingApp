@@ -16,7 +16,7 @@ TrainingDayViewController::TrainingDayViewController( QWidget* a_pParent )
 {
 	m_pTrainingDayUI->setupUi( this );
 
-	connect( m_pTrainingDayUI->m_pSaveTrainingButton, &QPushButton::clicked, this, &TrainingDayViewController::slotOnSaveClicked, Qt::UniqueConnection );
+	connect( m_pTrainingDayUI->m_pSaveTrainingButton, &QPushButton::clicked, this, &TrainingDayViewController::slotOnSaveAndQuitClicked, Qt::UniqueConnection );
 	connect( m_pTrainingDayUI->m_pAddIntervalButton, &QPushButton::clicked, this, &TrainingDayViewController::slotOnAddClicked, Qt::UniqueConnection );
 	connect( m_pTrainingDayUI->m_pQuitButton, &QPushButton::clicked, this, &TrainingDayViewController::slotOnQuitClicked, Qt::UniqueConnection );
 }
@@ -64,7 +64,7 @@ void TrainingDayViewController::SetModel()
 	strWhereStatement = strWhereStatement.arg( m_pTrainingDayData->GetDate() );
 
 	m_pIntervalModel->setFilter( strWhereStatement );
-	m_pIntervalModel->setEditStrategy( QSqlTableModel::OnManualSubmit );
+	m_pIntervalModel->setEditStrategy( QSqlTableModel::OnFieldChange );
 
 	m_pTrainingDayUI->m_pIntervalView->setModel( m_pIntervalModel );
 	m_pTrainingDayUI->m_pIntervalView->resizeColumnsToContents();
@@ -92,7 +92,6 @@ void TrainingDayViewController::PopulateView()
 
 	if ( m_pTrainingData )
 	{
-		m_pTrainingDayUI->m_pAvgPulseTraining->setValue( m_pTrainingData->GetAvgPulse() );
 		m_pTrainingDayUI->m_pMood->setCurrentIndex( m_pTrainingData->GetMood() );
 		m_pTrainingDayUI->m_pTrainingName->setText( m_pTrainingData->GetName() );
 
@@ -104,13 +103,30 @@ void TrainingDayViewController::PopulateView()
 		m_pTrainingDayUI->m_pTrainingType->setCurrentIndex( m_pTrainingData->GetTrainingType() );
 		m_pTrainingDayUI->m_pEnduranceLevel->setValue( m_pTrainingData->GetEnduranceLevel() );
 
-		m_pTrainingDayUI->m_pAvgPaceTraining->setTime( DateHelper::GetTimeFromSeconds( m_pTrainingData->GetAvgPace() ) );
-
 		m_pTrainingDayUI->m_pTrainingTime->setTime( DateHelper::GetTimeFromSeconds( m_pTrainingData->GetTime() ) );
 	}
 }
 
-void TrainingDayViewController::slotOnSaveClicked( bool /*a_bChecked*/ )
+void TrainingDayViewController::ClearIntervalData()
+{
+	m_pTrainingDayUI->m_pAvgPulse->setValue( 0 );
+	m_pTrainingDayUI->m_pCadence->setValue( 0 );
+	m_pTrainingDayUI->m_pCalories->setValue( 0 );
+	m_pTrainingDayUI->m_pDistance->setValue( 0 );
+	m_pTrainingDayUI->m_pDuration->setTime( QTime( 0, 0, 0 ) );
+	m_pTrainingDayUI->m_pMaxPulse->setValue( 0 );
+	m_pTrainingDayUI->m_pMinPulse->setValue( 0 );
+
+	m_pTrainingDayUI->m_pStepLength->setValue( 0.0 );
+	m_pTrainingDayUI->m_pAvgPace->setTime( QTime( 0, 0, 0 ) );
+	m_pTrainingDayUI->m_pFirstZoneTIme->setTime( QTime( 0, 0, 0 ) );
+	m_pTrainingDayUI->m_pSecondZoneTIme->setTime( QTime( 0, 0, 0 ) );
+	m_pTrainingDayUI->m_pThirdZoneTIme->setTime( QTime( 0, 0, 0 ) );
+	m_pTrainingDayUI->m_pFourthZoneTIme->setTime( QTime( 0, 0, 0 ) );
+	m_pTrainingDayUI->m_pFifthZoneTIme->setTime( QTime( 0, 0, 0 ) );
+}
+
+void TrainingDayViewController::slotOnSaveAndQuitClicked( bool /*a_bChecked*/ )
 {
 	if ( m_pTrainingDayData )
 	{
@@ -128,9 +144,16 @@ void TrainingDayViewController::slotOnSaveClicked( bool /*a_bChecked*/ )
 		else
 		{
 			QMessageBox msgBox;
-			msgBox.setText( "Tętno i tempo progowe musi być podane" );
-			msgBox.exec();
-			return;
+			msgBox.setText( "Tętno i tempo progowe nie zostało wprowadzone. Czy mimo to chcesz zapisać?" );
+			msgBox.setStandardButtons( QMessageBox::No | QMessageBox::Yes );
+			if ( msgBox.exec() == QMessageBox::Yes )
+			{
+				trainingDayQuery.InsertOrUpdate( m_pTrainingDayData );
+			}
+			else
+			{
+				return;
+			}
 		}
 
 	}
@@ -138,7 +161,6 @@ void TrainingDayViewController::slotOnSaveClicked( bool /*a_bChecked*/ )
 	if ( m_pTrainingData )
 	{
 		TrainingQuery trainingQuery;
-		m_pTrainingData->SetAvgPulse( m_pTrainingDayUI->m_pAvgPulseTraining->value() );
 		m_pTrainingData->SetMood( m_pTrainingDayUI->m_pMood->currentIndex() );
 		m_pTrainingData->SetName( m_pTrainingDayUI->m_pTrainingName->text() );
 		m_pTrainingData->SetRealistaion( m_pTrainingDayUI->m_pRealisationTextEdit->toPlainText() );
@@ -150,7 +172,6 @@ void TrainingDayViewController::slotOnSaveClicked( bool /*a_bChecked*/ )
 		m_pTrainingData->SetEnduranceLevel( m_pTrainingDayUI->m_pEnduranceLevel->value() );
 
 		m_pTrainingData->SetTime( DateHelper::GetSecondsForHH_MM_SS( m_pTrainingDayUI->m_pTrainingTime->time() ) );
-		m_pTrainingData->SetAvgPace( DateHelper::GetSecondsForMM_SS( m_pTrainingDayUI->m_pAvgPaceTraining->time() ) );
 
 		trainingQuery.InsertOrUpdate( m_pTrainingData );
 	}
@@ -189,6 +210,8 @@ void TrainingDayViewController::slotOnAddClicked( bool /*a_bChecked*/ )
 
 void TrainingDayViewController::slotOnQuitClicked( bool /*a_bChecked*/ )
 {
+	ClearIntervalData();
+
 	emit signalClosed();
 	hide();
 }

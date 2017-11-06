@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>595</width>
+    <width>965</width>
     <height>301</height>
    </rect>
   </property>
@@ -60,14 +60,21 @@
            <item row="0" column="0">
             <layout class="QHBoxLayout" name="horizontalLayout">
              <item>
-              <widget class="QCheckBox" name="m_pTSSChart">
+              <widget class="QCheckBox" name="m_pPulseTSSChart">
                <property name="text">
-                <string>TSS</string>
+                <string>TSS tętno</string>
                </property>
               </widget>
              </item>
              <item>
-              <widget class="QCheckBox" name="m_pDuration">
+              <widget class="QCheckBox" name="m_pPaceTSSChart">
+               <property name="text">
+                <string>TSS tempo</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="m_pDurationChart">
                <property name="text">
                 <string>Czas trwania</string>
                </property>
@@ -139,7 +146,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>595</width>
+     <width>965</width>
      <height>22</height>
     </rect>
    </property>

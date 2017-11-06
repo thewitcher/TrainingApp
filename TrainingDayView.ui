@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1097</width>
+    <width>1181</width>
     <height>726</height>
    </rect>
   </property>
@@ -352,40 +352,8 @@
       <string>Trening</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="10">
-       <widget class="QDateTimeEdit" name="m_pAvgPaceTraining">
-        <property name="displayFormat">
-         <string>mm:ss</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="9">
-       <widget class="QLabel" name="label_25">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Średnie tempo:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[mm:ss]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="7">
-       <widget class="QLabel" name="label_24">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Średnie tętno:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[bpm]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1">
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nazwa:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[tekst]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="8">
-       <widget class="QSpinBox" name="m_pAvgPulseTraining">
-        <property name="maximum">
-         <number>200</number>
-        </property>
-       </widget>
+      <item row="0" column="2">
+       <widget class="QLineEdit" name="m_pTrainingName"/>
       </item>
       <item row="0" column="4">
        <widget class="QComboBox" name="m_pMood">
@@ -416,30 +384,6 @@
         </item>
        </widget>
       </item>
-      <item row="0" column="2">
-       <widget class="QLineEdit" name="m_pTrainingName"/>
-      </item>
-      <item row="0" column="5">
-       <widget class="QLabel" name="label_8">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Godzina treningu:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[hh:mm]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Samopoczucie:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[wybór]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="6">
-       <widget class="QDateTimeEdit" name="m_pTrainingTime">
-        <property name="displayFormat">
-         <string>HH:mm</string>
-        </property>
-       </widget>
-      </item>
       <item row="2" column="1" colspan="4">
        <widget class="QGroupBox" name="groupBox_4">
         <property name="title">
@@ -452,7 +396,7 @@
         </layout>
        </widget>
       </item>
-      <item row="2" column="5" colspan="8">
+      <item row="2" column="5" colspan="6">
        <widget class="QGroupBox" name="groupBox_5">
         <property name="title">
          <string>Realizacja</string>
@@ -471,17 +415,20 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="3">
-       <widget class="QLabel" name="label_27">
-        <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Poziom wydolności:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[wartość]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-        </property>
-       </widget>
-      </item>
       <item row="1" column="5">
        <widget class="QLabel" name="label_28">
         <property name="text">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Typ treningu:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[wybór]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QSpinBox" name="m_pEnduranceLevel">
+        <property name="minimum">
+         <number>-30</number>
+        </property>
+        <property name="maximum">
+         <number>30</number>
         </property>
        </widget>
       </item>
@@ -549,28 +496,53 @@
         </item>
        </widget>
       </item>
-      <item row="1" column="4">
-       <widget class="QSpinBox" name="m_pEnduranceLevel">
-        <property name="minimum">
-         <number>-30</number>
-        </property>
-        <property name="maximum">
-         <number>30</number>
+      <item row="1" column="3">
+       <widget class="QLabel" name="label_27">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Poziom wydolności:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[wartość]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="2">
-       <widget class="QSpinBox" name="m_pTrainingEffect"/>
+      <item row="0" column="1">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Nazwa:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[tekst]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
       </item>
-      <item row="1" column="7">
+      <item row="0" column="3">
+       <widget class="QLabel" name="label_7">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Samopoczucie:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[wybór]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QDateTimeEdit" name="m_pTrainingTime">
+        <property name="displayFormat">
+         <string>HH:mm</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="5">
+       <widget class="QLabel" name="label_8">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Godzina treningu:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[hh:mm]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
        <widget class="QLabel" name="label_15">
         <property name="text">
          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Odpoczynek:&lt;br/&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;[h]&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="8">
+      <item row="0" column="8">
        <widget class="QSpinBox" name="m_pRestTime"/>
+      </item>
+      <item row="1" column="2">
+       <widget class="QDoubleSpinBox" name="m_pTrainingEffect"/>
       </item>
      </layout>
     </widget>

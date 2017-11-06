@@ -2,6 +2,7 @@
 #include "Constants.h"
 
 #include <QDebug>
+#include <cmath>
 
 bool DateHelper::IsBefore( const QDate& a_rStartDate, const QDate& a_rEndDate )
 {
@@ -124,4 +125,11 @@ QString DateHelper::GetStringFromSeconds( const int a_iSeconds, const QString& a
 QTime DateHelper::GetTimeFromSeconds( const int a_iSeconds )
 {
 	return QTime( 0, 0, 0, 0 ).addSecs( a_iSeconds );
+}
+
+int DateHelper::GetSecondsFromDecimalValue( const float a_fPaceInDecimalValue )
+{
+	double iIntegerPart;
+	double dFractionalPart = modf( a_fPaceInDecimalValue, &iIntegerPart );
+	return iIntegerPart * 60 + dFractionalPart * 60;
 }

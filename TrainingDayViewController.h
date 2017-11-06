@@ -32,13 +32,15 @@ signals:
 	void signalClosed();
 
 protected slots:
-	void slotOnSaveClicked( bool a_bChecked );
+	void slotOnSaveAndQuitClicked( bool a_bChecked );
 	void slotOnAddClicked( bool a_bChecked );
 	void slotOnQuitClicked( bool a_bChecked );
 
 private:
 	void LoadIntervals();
 	void PopulateView();
+	void ClearIntervalData();
+
 	void SetModel();
 	QSharedPointer<IntervalData> ReadIntervalDataFromUI() const;
 

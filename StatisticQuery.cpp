@@ -2,6 +2,8 @@
 #include "DateHelper.h"
 #include "Constants.h"
 
+#include "CommonQuery.h"
+
 #include <QDebug>
 #include "QSqlQuery"
 #include "QSqlError"
@@ -41,7 +43,7 @@ void StatisticQuery::LoadTrainingCountInWeek( const QString& a_rDate, QSharedPoi
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadTrainingCountInWeek: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -60,7 +62,7 @@ void StatisticQuery::LoadTrainingCountInMonth( const QString& a_rDate, QSharedPo
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadTrainingCountInMonth: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -79,7 +81,7 @@ void StatisticQuery::LoadDistanceInWeek( const QString& a_rDate, QSharedPointer<
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadDistanceInWeek: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -98,7 +100,7 @@ void StatisticQuery::LoadDistanceInMonth( const QString& a_rDate, QSharedPointer
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadDistanceInMonth: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -117,7 +119,7 @@ void StatisticQuery::LoadDurationInWeek( const QString& a_rDate, QSharedPointer<
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadDurationInWeek: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -136,7 +138,7 @@ void StatisticQuery::LoadDurationInMonth( const QString& a_rDate, QSharedPointer
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadDurationInMonth: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -155,7 +157,7 @@ void StatisticQuery::LoadCaloriesInWeek( const QString& a_rDate, QSharedPointer<
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadCaloriesInWeek: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -174,7 +176,7 @@ void StatisticQuery::LoadCaloriesInMonth( const QString& a_rDate, QSharedPointer
 	query.prepare( strQueryString );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadCaloriesInMonth: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -190,7 +192,7 @@ void StatisticQuery::LoadCaloriesInDay( const QString& a_rDate, QSharedPointer<S
 	query.bindValue( ":Date", a_rDate );
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadCaloriesInDay: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
@@ -201,50 +203,68 @@ void StatisticQuery::LoadCaloriesInDay( const QString& a_rDate, QSharedPointer<S
 
 void StatisticQuery::LoadTrainingStressScoreForPulse( const QString& a_rDate, QSharedPointer<StatisticData> a_pStatisticData ) const
 {
-	QString strQueryString = QString
-	(
-	"SELECT" \
-	" TrainingDay.Date, " \
-	" ifnull( ( SELECT SUM(Duration) FROM Interval WHERE Date = TrainingDay.Date ) / 3600.0, 0 ) as Time, " \
-	" ifnull( ( CAST( TrainingDay.TresholdPulse as float ) / CAST( Training.AvgPulse as float ) ) * ( CAST( TrainingDay.TresholdPulse as float ) / CAST( Training.AvgPulse as float ) ), 0 )  as IF " \
-	" FROM Training, TrainingDay " \
-	" WHERE TrainingDay.Date BETWEEN '%1' AND '%1' AND TrainingDay.Date = Training.Date;"
-	).arg( a_rDate );
+	int iAvgPulse = CommonQuery::LoadAvgPulse( a_rDate );
 
 	QSqlQuery query;
-	query.prepare( strQueryString );
+	query.prepare
+	(
+		"SELECT TrainingDay.Date, "
+		"( SELECT SUM(Duration) FROM Interval WHERE Date = TrainingDay.Date ) / 3600.0 as Time, "
+		" TrainingDay.TresholdPulse as TP"
+		" FROM Training, TrainingDay "
+		" WHERE TrainingDay.Date = :Date AND TrainingDay.Date = Training.Date;"
+	);
+	query.bindValue( ":Date", a_rDate );
+
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadTrainingStressScoreForPulse: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
 	{
-		a_pStatisticData->SetTrainingStressScoreForPulse( query.value( "Time" ).toFloat() * query.value( "IF" ).toFloat() * 100.0 );
+		int iTresholdPulse = query.value( "TP" ).toFloat();
+
+		double IF = 0.0;
+
+		if ( iAvgPulse != 0 )
+		{
+			IF = double( iTresholdPulse ) / double( iAvgPulse );
+		}
+		a_pStatisticData->SetTrainingStressScoreForPulse( query.value( "Time" ).toFloat() * IF * IF * 100.0 );
 	}
 }
 
 void StatisticQuery::LoadTrainingStressScoreForPace( const QString& a_rDate, QSharedPointer<StatisticData> a_pStatisticData ) const
 {
-	QString strQueryString = QString
-	(
-	"SELECT" \
-	" TrainingDay.Date, " \
-	" ifnull( ( SELECT SUM(Duration) FROM Interval WHERE Date = TrainingDay.Date ) / 3600.0, 0 ) as Time, " \
-	" ifnull( ( CAST( TrainingDay.TresholdPace as float ) / CAST( Training.AvgPace as float ) ) * ( CAST( TrainingDay.TresholdPace as float ) / CAST( Training.AvgPace as float ) ), 0 )  as IF " \
-	" FROM Training, TrainingDay " \
-	" WHERE TrainingDay.Date BETWEEN '%1' AND '%1' AND TrainingDay.Date = Training.Date;"
-	).arg( a_rDate );
+	int iAvgPace = CommonQuery::LoadAvgPace( a_rDate );
 
 	QSqlQuery query;
-	query.prepare( strQueryString );
+	query.prepare
+	(
+		"SELECT TrainingDay.Date, "
+		"( SELECT SUM(Duration) FROM Interval WHERE Date = TrainingDay.Date ) / 3600.0 as Time, "
+		" TrainingDay.TresholdPace as TP"
+		" FROM Training, TrainingDay "
+		" WHERE TrainingDay.Date = :Date AND TrainingDay.Date = Training.Date;"
+	);
+	query.bindValue( ":Date", a_rDate );
+
 	if ( !query.exec() )
 	{
-		qWarning() << QString( "StatisticQuery: select query error: " + query.lastError().text() );
+		qWarning() << QString( "StatisticQuery::LoadTrainingStressScoreForPace: select query error: " + query.lastError().text() );
 	}
 
 	if ( query.next() )
 	{
-		a_pStatisticData->SetTrainingStressScoreForPace( query.value( "Time" ).toFloat() * query.value( "IF" ).toFloat() * 100.0 );
+		int iTresholdPace = query.value( "TP" ).toFloat();
+
+		double IF = 0.0;
+		if ( iAvgPace != 0 )
+		{
+			IF = double( iTresholdPace ) / double( iAvgPace );
+		}
+
+		a_pStatisticData->SetTrainingStressScoreForPulse( query.value( "Time" ).toFloat() * IF * IF * 100.0 );
 	}
 }

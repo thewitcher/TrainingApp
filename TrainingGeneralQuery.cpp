@@ -1,5 +1,8 @@
 #include "TrainingGeneralQuery.h"
 
+#include "DateHelper.h"
+#include "CommonQuery.h"
+
 #include <QSqlQuery>
 #include <QSqlError>
 #include <QDebug>
@@ -13,7 +16,8 @@ QSharedPointer<TrainingGeneralData> TrainingGeneralQuery::Load( const QString& a
 {
 	auto pTrainingGeneralData = QSharedPointer<TrainingGeneralData>::create( a_rDate );
 	LoadDistanceAndDuration( pTrainingGeneralData );
-	LoadAvgPulseAndPace( pTrainingGeneralData );
+	LoadAvgPace( pTrainingGeneralData );
+	LoadAvgPulse( pTrainingGeneralData );
 	LoadTrainingName( pTrainingGeneralData );
 	LoadTrainingType( pTrainingGeneralData );
 
@@ -37,21 +41,14 @@ void TrainingGeneralQuery::LoadDistanceAndDuration( QSharedPointer<TrainingGener
 	}
 }
 
-void TrainingGeneralQuery::LoadAvgPulseAndPace( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const
+void TrainingGeneralQuery::LoadAvgPace( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const
 {
-	QSqlQuery query;
-	query.prepare( "SELECT AvgPace, AvgPulse FROM Training WHERE Date = :Date" );
-	query.bindValue( ":Date", a_pTrainingGeneralData->GetDate() );
-	if ( !query.exec() )
-	{
-		qWarning() << QString( "LoadAvgIfNeeded: select query error: " + query.lastError().text() );
-	}
+	a_pTrainingGeneralData->SetAvgPace( CommonQuery::LoadAvgPace( a_pTrainingGeneralData->GetDate() ) );
+}
 
-	if ( query.next() )
-	{
-		a_pTrainingGeneralData->SetAvgPace( query.value( "AvgPace" ).toInt() );
-		a_pTrainingGeneralData->SetAvgPulse( query.value( "AvgPulse" ).toInt() );
-	}
+void TrainingGeneralQuery::LoadAvgPulse( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const
+{
+	a_pTrainingGeneralData->SetAvgPulse( CommonQuery::LoadAvgPulse( a_pTrainingGeneralData->GetDate() ) );
 }
 
 void TrainingGeneralQuery::LoadTrainingName( QSharedPointer<TrainingGeneralData> a_pTrainingGeneralData ) const
